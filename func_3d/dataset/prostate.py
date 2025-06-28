@@ -69,7 +69,6 @@ class IntreDataset_revice(Dataset):
         num_frame = data_seg_3d.shape[0]
         starting_frame = 0
         video_length = num_frame
-        img_tensor = torch.zeros(video_length, 3, self.img_size, self.img_size)
         mask_dict = {}
         bbox_dict = {}
         img_tensor = torch.zeros(video_length, 3, self.img_size, self.img_size) 
@@ -177,7 +176,6 @@ class IntraDataset_revice(Dataset):
         num_frame = data_seg_3d.shape[0]
         starting_frame = 0
         video_length = num_frame
-        img_tensor = torch.zeros(video_length, 3, self.img_size, self.img_size) 
         mask_dict = {}
         bbox_dict = {}
         img_tensor = torch.zeros(video_length, 3, self.img_size, self.img_size) 
