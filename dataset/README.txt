@@ -1,1 +1,1 @@
-Please download the dataset from the following link: [https://muregpro.github.io/data.html](https://muregpro.github.io/data.html)
+Please download the dataset from the following link: https://muregpro.github.io/data.html
