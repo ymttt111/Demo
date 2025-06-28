@@ -1,2 +1,2 @@
 # Det-SAMReg
-demo
+Please install MMDetection first.
