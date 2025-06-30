@@ -181,7 +181,7 @@ for fix_pack,mov_pack,us_seg,mr_seg,mr_img,us_img in tqdm(test_loader, desc="Inf
     roi_warped = (warp_by_ddf(mov_gt.to(dtype=torch.float32, device=device), ddf) * 255).bool().int()
     # img_warped = (warp_by_ddf(mr_img.to(dtype=torch.float32, device=device), ddf,mode='bilinear'))
     roi_warped = roi_warped.squeeze()
-    # print(roi_warped.shape)   # torch.Size([6, 81, 118, 88])
+    # print(roi_warped.shape)  
     result_raw_us = mask_err(fix_seg.cpu().numpy(), mask_fix.cpu().numpy())
     result_raw_mr = mask_err(mov_seg.cpu().numpy(), mask_mov.cpu().numpy())
     
