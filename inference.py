@@ -27,11 +27,11 @@ us_label_path = "/home/adminer/code/Det-SAMReg-demo/dataset/test/us_labels/"
 us_image_path = "/home/adminer/code/Det-SAMReg-demo/dataset/test/us_images/"
 mr_dino_checkpoint="/home/adminer/code/Det-SAMReg-demo/checkpoint/MR-G-DINO.pth"
 us_dino_checkpoint="/home/adminer/code/Det-SAMReg-demo/checkpoint/US-G-DINO.pth"
-temp_path = '//home/adminer/code/Det-SAMReg-demo/result/vis_result/output.jpg'
+temp_path = '/home/adminer/code/Det-SAMReg-demo/result/vis_result/output.jpg'
 inferencer_mr = DetInferencer(model='grounding_dino_swin-t_finetune_16xb2_1x_coco', weights=mr_dino_checkpoint,device=device,show_progress=False)
 inferencer_us = DetInferencer(model='grounding_dino_swin-t_finetune_16xb2_1x_coco', weights=us_dino_checkpoint,device=device,show_progress=False)
-result_temp_path1 = '//home/adminer/code/Det-SAMReg-demo/result/vis_result/seg_result.svg'
-result_temp_path = '//home/adminer/code/Det-SAMReg-demo/result/vis_result/seg_result.png'
+result_temp_path1 = '/home/adminer/code/Det-SAMReg-demo/result/vis_result/seg_result.svg'
+result_temp_path = '/home/adminer/code/Det-SAMReg-demo/result/vis_result/seg_result.png'
 
 csv_path = '//home/adminer/code/Det-SAMReg-demo/result/csv_result/test.csv'
 args = cfg.parse_args()
