@@ -213,11 +213,11 @@ for w_ddf2 in [5]:
             roi_warped = (warp_by_ddf(mov_gt.to(dtype=torch.float32, device=device), ddf) * 255).bool().int()
             img_warped = warp_by_ddf(mr_img.to(dtype=torch.float32, device=device), ddf, mode='bilinear')
 
-            if i == 0:
-                print(path)
-                i += 1
-                nib.save(nib.Nifti1Image(img_warped.squeeze().cpu().detach().numpy(), affine, header),
-                         '/home/adminer/code/auto_reg/warped_img.nii.gz')
+            # if i == 0:
+            #     print(path)
+            #     i += 1
+            #     nib.save(nib.Nifti1Image(img_warped.squeeze().cpu().detach().numpy(), affine, header),
+            #              '/home/adminer/code/auto_reg/warped_img.nii.gz')
 
             roi_warped = roi_warped.squeeze()
             print(roi_warped.shape)
