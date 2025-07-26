@@ -34,8 +34,8 @@ mr_image_path = '/home/adminer/code/auto_reg/dataset/prostate1/test/mr_images/'
 mr_label_path = '/home/adminer/code/auto_reg/dataset/prostate1/test/mr_labels/'
 us_label_path = "/home/adminer/code/auto_reg/dataset/prostate1/test/us_labels/"
 us_image_path = "/home/adminer/code/auto_reg/dataset/prostate1/test/us_images/"
-mr_dino_checkpoint = "/home/adminer/code/auto_reg/checkpoints/epoch_9.pth"
-us_dino_checkpoint = "/home/adminer/code/auto_reg/checkpoints/epoch_3.pth"
+mr_dino_checkpoint = "/home/adminer/code/auto_reg/checkpoints/MR-GD.pth"
+us_dino_checkpoint = "/home/adminer/code/auto_reg/checkpoints/US-GD.pth"
 temp_path = '/home/adminer/code/auto_reg/result/vis_result/output.jpg'
 inferencer_mr = DetInferencer(model='grounding_dino_swin-t_finetune_16xb2_1x_coco', weights=mr_dino_checkpoint, device=device, show_progress=False)
 inferencer_us = DetInferencer(model='grounding_dino_swin-t_finetune_16xb2_1x_coco', weights=us_dino_checkpoint, device=device, show_progress=False)
