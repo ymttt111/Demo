@@ -200,10 +200,10 @@ for fix_pack, mov_pack, us_seg, mr_seg, mr_img, us_img in tqdm(test_loader, desc
             masks_mov, masks_fix, mov_gt, mr_img, us_img, us_seg,
             mr_seg, fix_seg, mov_seg, mask_fix, mask_mov])
 
-    paired_rois = PairedRegions(masks_mov=masks_mov, masks_fix=masks_fix, images_mov=mr_img, images_fix=us_img, device=device)
+    paired_rois = PairedRegions(masks_mov=masks_mov, masks_fix=masks_fix, device=device)
 
     ddf = paired_rois.get_dense_correspondence(transform_type='ddf', max_iter=5000, lr=0.01,
-                                               w_roi=1, w_ddf2=5, w_ddfb=0, w_img=0, verbose=True)
+                                               w_roi=1, w_ddf2=5, w_ddfb=0, verbose=True)
 
     print("ddf.shape:", ddf.shape)
 
