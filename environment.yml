@@ -1,4 +1,4 @@
-name: med2gsam
+name: Det-SAMReg
 channels:
   - pytorch
   - nvidia
@@ -137,4 +137,4 @@ dependencies:
     - urllib3==2.3.0
     - wheel==0.45.1
     - yapf==0.43.0
-prefix: /home/adminer/anaconda3/envs/med2gsam
+prefix: /home/adminer/anaconda3/envs/Det-SAMReg
