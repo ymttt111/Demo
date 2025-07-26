@@ -198,8 +198,7 @@ for fix_pack, mov_pack, us_seg, mr_seg, mr_img, us_img in tqdm(test_loader, desc
     masks_mov, masks_fix, mov_gt, mr_img, us_img, us_seg, mr_seg, fix_seg, mov_seg, mask_fix, mask_mov = (
         utils.center_pad_last3d_to_shape(i) for i in [
             masks_mov, masks_fix, mov_gt, mr_img, us_img, us_seg,
-            mr_seg, fix_seg, mov_seg, mask_fix, mask_mov
-        ])
+            mr_seg, fix_seg, mov_seg, mask_fix, mask_mov])
 
     paired_rois = PairedRegions(masks_mov=masks_mov, masks_fix=masks_fix, images_mov=mr_img, images_fix=us_img, device=device)
 
