@@ -171,66 +171,64 @@ def sam_with_box(pack, temp_path, slice_dim, sam_type):
     region_idx, mask_3d = next(iter(region_masks.items()))
     return torch.tensor(mask_3d, device=device), [iou_avg.item(), giou_avg.item(), diou_avg.item(), ciou_avg.item()]
 
-for w_ddf2 in [5]:
-    for w_ddfb in [0]:
-        csv_path = f'/home/adminer/code/auto_reg/test2.csv'
-        with open(csv_path, mode='w', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow(['dice_raw', 'tre_raw', 'dice', 'tre', 'hd95', 'asd'])  # CSV header
+csv_path = f'/home/adminer/code/auto_reg/test2.csv'
+with open(csv_path, mode='w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['dice_raw', 'tre_raw', 'dice', 'tre', 'hd95', 'asd'])  # CSV header
 
-        for fix_pack, mov_pack, us_seg, mr_seg, mr_img, us_img in tqdm(test_loader, desc="Inference", unit="batch", total=len(test_loader)):
-            fix_seg = fix_pack['seg_data'].squeeze().to(device)
-            mov_seg = mov_pack['seg_data'].squeeze().to(device)
-            us_img = us_img.to(device)
-            mr_img = mr_img.to(device)
+for fix_pack, mov_pack, us_seg, mr_seg, mr_img, us_img in tqdm(test_loader, desc="Inference", unit="batch", total=len(test_loader)):
+    fix_seg = fix_pack['seg_data'].squeeze().to(device)
+    mov_seg = mov_pack['seg_data'].squeeze().to(device)
+    us_img = us_img.to(device)
+    mr_img = mr_img.to(device)
 
-            path = fix_pack['path'][0]
-            _, affine, header = utils.load_nii_image(path)
+    path = fix_pack['path'][0]
+    _, affine, header = utils.load_nii_image(path)
 
-            region_masks = {}
-            mask_fix, fix_result = sam_with_box(fix_pack, temp_path, slice_dim=0, sam_type='us')
-            region_masks = {}
-            mask_mov, mov_result = sam_with_box(mov_pack, temp_path, slice_dim=0, sam_type='mr')
+    region_masks = {}
+    mask_fix, fix_result = sam_with_box(fix_pack, temp_path, slice_dim=0, sam_type='us')
+    region_masks = {}
+    mask_mov, mov_result = sam_with_box(mov_pack, temp_path, slice_dim=0, sam_type='mr')
 
-            bbox_err_avg = [(a + b) / 2 for a, b in zip(fix_result, mov_result)]
-            masks_mov = torch.stack([mask_mov], dim=0).to(torch.bool)
-            masks_fix = torch.stack([mask_fix], dim=0).to(torch.bool)
-            mov_gt = torch.stack([mr_seg[i] for i in range(mr_seg.shape[0])], dim=0).to(torch.bool).squeeze()
+    bbox_err_avg = [(a + b) / 2 for a, b in zip(fix_result, mov_result)]
+    masks_mov = torch.stack([mask_mov], dim=0).to(torch.bool)
+    masks_fix = torch.stack([mask_fix], dim=0).to(torch.bool)
+    mov_gt = torch.stack([mr_seg[i] for i in range(mr_seg.shape[0])], dim=0).to(torch.bool).squeeze()
 
-            masks_mov, masks_fix, mov_gt, mr_img, us_img, us_seg, mr_seg, fix_seg, mov_seg, mask_fix, mask_mov = (
-                utils.center_pad_last3d_to_shape(i) for i in [
-                    masks_mov, masks_fix, mov_gt, mr_img, us_img, us_seg,
-                    mr_seg, fix_seg, mov_seg, mask_fix, mask_mov
-                ])
+    masks_mov, masks_fix, mov_gt, mr_img, us_img, us_seg, mr_seg, fix_seg, mov_seg, mask_fix, mask_mov = (
+        utils.center_pad_last3d_to_shape(i) for i in [
+            masks_mov, masks_fix, mov_gt, mr_img, us_img, us_seg,
+            mr_seg, fix_seg, mov_seg, mask_fix, mask_mov
+        ])
 
-            paired_rois = PairedRegions(masks_mov=masks_mov, masks_fix=masks_fix, images_mov=mr_img, images_fix=us_img, device=device)
+    paired_rois = PairedRegions(masks_mov=masks_mov, masks_fix=masks_fix, images_mov=mr_img, images_fix=us_img, device=device)
 
-            ddf = paired_rois.get_dense_correspondence(transform_type='ddf', max_iter=5000, lr=0.01,
-                                                       w_roi=1, w_ddf2=w_ddf2, w_ddfb=w_ddfb, w_img=0, verbose=True)
+    ddf = paired_rois.get_dense_correspondence(transform_type='ddf', max_iter=5000, lr=0.01,
+                                               w_roi=1, w_ddf2=5, w_ddfb=0, w_img=0, verbose=True)
 
-            print("ddf.shape:", ddf.shape)
+    print("ddf.shape:", ddf.shape)
 
-            roi_warped = (warp_by_ddf(mov_gt.to(dtype=torch.float32, device=device), ddf) * 255).bool().int()
-            img_warped = warp_by_ddf(mr_img.to(dtype=torch.float32, device=device), ddf, mode='bilinear')
+    roi_warped = (warp_by_ddf(mov_gt.to(dtype=torch.float32, device=device), ddf) * 255).bool().int()
+    img_warped = warp_by_ddf(mr_img.to(dtype=torch.float32, device=device), ddf, mode='bilinear')
 
-            # if i == 0:
-            #     print(path)
-            #     i += 1
-            #     nib.save(nib.Nifti1Image(img_warped.squeeze().cpu().detach().numpy(), affine, header),
-            #              '/home/adminer/code/auto_reg/warped_img.nii.gz')
+    # if i == 0:
+    #     print(path)
+    #     i += 1
+    #     nib.save(nib.Nifti1Image(img_warped.squeeze().cpu().detach().numpy(), affine, header),
+    #              '/home/adminer/code/auto_reg/warped_img.nii.gz')
 
-            roi_warped = roi_warped.squeeze()
-            print(roi_warped.shape)
-            print("img_warped.shape:", img_warped.shape)
+    roi_warped = roi_warped.squeeze()
+    print(roi_warped.shape)
+    print("img_warped.shape:", img_warped.shape)
 
-            result_raw = mask_err(fix_seg.cpu().numpy(), mask_fix.cpu().numpy())
-            us_seg = us_seg.to(device)
-            result = mask_multi(us_seg.squeeze(), roi_warped)
+    result_raw = mask_err(fix_seg.cpu().numpy(), mask_fix.cpu().numpy())
+    us_seg = us_seg.to(device)
+    result = mask_multi(us_seg.squeeze(), roi_warped)
 
-            print('dice_raw:{:.2f},tre_raw:{:.2f},dice:{:.2f},tre:{:.2f},hd95:{:.2f},asd:{:.2f}'.format(
-                result_raw['dice'], result_raw['tre'], result['dice'], result['tre'], result['hd95'], result['asd']))
+    print('dice_raw:{:.2f},tre_raw:{:.2f},dice:{:.2f},tre:{:.2f},hd95:{:.2f},asd:{:.2f}'.format(
+        result_raw['dice'], result_raw['tre'], result['dice'], result['tre'], result['hd95'], result['asd']))
 
-            with open(csv_path, mode='a', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow([result_raw['dice'], result_raw['tre'],
-                                 result['dice'], result['tre'], result['hd95'], result['asd']])
+    with open(csv_path, mode='a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([result_raw['dice'], result_raw['tre'],
+                         result['dice'], result['tre'], result['hd95'], result['asd']])
